@@ -3,7 +3,7 @@
 public class Program {
     public static void Main(string[] args) {
         IItemDatabase Books;
-        IUserDatabase Members;
+        INamedUserDatabase Members;
         IRatingMap Ratings;
 
         //enter an item filepath
@@ -15,6 +15,7 @@ public class Program {
         var parsedText = FileReader.GetUserFileParsedText("file.txt");
         Members = new MemberDatabase(parsedText);
 
-        Ratings = new MemberBookRatingsDatabase(parsedText);
+        //Create rating map
+        Ratings = new RatingMap(Members.MapNamesToIds(parsedText), Books);
     }
 }
