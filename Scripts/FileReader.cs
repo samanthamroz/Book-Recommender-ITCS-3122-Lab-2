@@ -26,10 +26,18 @@ public class FileReader {
             KeyValuePair<string, int[]> kvp;
 
             string[] stringRatings = lines[i + 1].Split(' ');
+            foreach (string s in stringRatings) {
+                Console.Write(s);
+            }
+
             int[] ratings = new int[stringRatings.Length];
             for (int j = 0; j < stringRatings.Length; j++)
             {
-                ratings[j] = int.Parse(stringRatings[j]);
+                if (int.TryParse(stringRatings[j], out ratings[j])) {
+                    
+                } else {
+                    ratings[j] = 0;
+                }
             }
 
             kvp = new(lines[i], ratings);

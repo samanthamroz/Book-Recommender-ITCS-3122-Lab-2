@@ -9,11 +9,15 @@ public class BookDatabase : IItemDatabase {
         books = new();
 
         for (int i = 0; i < parsedText.Length; i += 3) {
-            Book book = new(i, parsedText[i + 1], parsedText[i], int.Parse(parsedText[i + 2]));
+            Book book = new(i, parsedText[i + 1], parsedText[i], parsedText[i + 2]);
             books.Add(book);
         }
     }
-    
+
+    public int GetCount() {
+        return books.Count;
+    }
+
     public Item GetItemById(int id) {
         throw new NotImplementedException();
     }

@@ -12,3 +12,4 @@ C:\Users\saman\Desktop\ITCS_3112_Projects\Lab2\Lab2\obj\Debug\net10.0\refint\Lab
 C:\Users\saman\Desktop\ITCS_3112_Projects\Lab2\Lab2\obj\Debug\net10.0\Lab2.pdb
 C:\Users\saman\Desktop\ITCS_3112_Projects\Lab2\Lab2\obj\Debug\net10.0\Lab2.genruntimeconfig.cache
 C:\Users\saman\Desktop\ITCS_3112_Projects\Lab2\Lab2\obj\Debug\net10.0\ref\Lab2.dll
+c:\Users\saman\Desktop\ITCS_3112_Projects\Lab2\Lab2\obj\Debug\net10.0\Lab2.sourcelink.json

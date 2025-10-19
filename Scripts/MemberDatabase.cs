@@ -1,6 +1,6 @@
 namespace Lab2;
 
-public class MemberDatabase : INamedUserDatabase {
+public class MemberDatabase : IUserDatabase {
     List<Member> members = new();
 
     //This constructor expects the parsed text array to be in the following format:
@@ -34,5 +34,13 @@ public class MemberDatabase : INamedUserDatabase {
 
     public User GetUserByName(string name) {
         return members.First(m => m.Name == name);
+    }
+
+    public int GetCount() {
+        return members.Count;
+    }
+
+    public int GetNextAvailableId() {
+        return members[^1].UserId + 1;
     }
 }
