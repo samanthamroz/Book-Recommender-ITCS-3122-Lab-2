@@ -5,5 +5,4 @@ public interface IUserDatabase : IDatabase {
     User GetUserById(int id);
     User GetUserByName(string name);
     List<KeyValuePair<int, int[]>> MapNamesToIds(List<KeyValuePair<string, int[]>> kvps);
-    int GetNextAvailableId();
 }

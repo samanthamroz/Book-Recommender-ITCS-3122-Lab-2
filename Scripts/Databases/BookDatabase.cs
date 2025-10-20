@@ -18,11 +18,26 @@ public class BookDatabase : IItemDatabase {
         return books.Count;
     }
 
-    public Item GetItemById(int id) {
-        throw new NotImplementedException();
+    public int GetNextAvailableId() {
+        return books[^1].ItemId + 1;
     }
 
     public void SetItem(Item item) {
-        throw new NotImplementedException();
+        if (item is not Book book) {
+            throw new ArgumentException("BookDatabase can only store Book objects");
+        }
+            //shorthand "for each Member m, m.UserId == member.UserId, remove"
+        books.RemoveAll(b => b.ItemId == book.ItemId);
+        
+        books.Add(book);
+    }
+
+    public Item GetItemById(int id) {
+        foreach (Book b in books) {
+            if (b.ItemId == id) {
+                return b;
+            }
+        }
+        throw new KeyNotFoundException($"No book found with ID {id}");
     }
 }

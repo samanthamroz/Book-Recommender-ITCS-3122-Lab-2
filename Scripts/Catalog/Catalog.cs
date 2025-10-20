@@ -2,13 +2,6 @@ using System.Data;
 
 namespace Lab2;
 
-public interface ICatalog {
-    public void AddUser();
-    public void AddItem();
-    public void AddItemRating(int userId);
-    public void DisplayUsersRatings(int userId);
-}
-
 public class Catalog : ICatalog {
     public Catalog() {
         
@@ -34,7 +27,12 @@ public class Catalog : ICatalog {
 
         Member newMember = new(id, name);
         database.SetUser(newMember);
-        Console.WriteLine($"New {type} successfully added. Current {type} count: {database.GetCount()}");
+        Console.WriteLine($"New {type} successfully added with ID {id}. Current {type} count: {database.GetCount()}");
+    }
+
+    public User GetUserById(string type, int id) {
+        IUserDatabase database = Repository.Instance.GetUserDatabaseOfType(type);
+        return database.GetUserById(id);
     }
 
     public void AddItem() {
@@ -42,9 +40,9 @@ public class Catalog : ICatalog {
         string type = Console.ReadLine();
         type = type.ToLowerInvariant();
 
-        IUserDatabase database;
+        IItemDatabase database;
         try {
-            database = Repository.Instance.GetUserDatabaseOfType(type);
+            database = Repository.Instance.GetItemDatabaseOfType(type);
         } catch (ArgumentException) {
             Console.WriteLine($"Error: Database of type {type} does not exist.");
             return;
@@ -52,12 +50,10 @@ public class Catalog : ICatalog {
         
         int id = database.GetNextAvailableId();
 
-        Console.WriteLine($"Enter the new {type}'s name: ");
-        string name = Console.ReadLine();
-
-        Member newMember = new(id, name);
-        database.SetUser(newMember);
-        Console.WriteLine($"New {type} successfully added. Current {type} count: {database.GetCount()}");
+        Item newItem = ItemFactory.CreateItemFromConsoleInput(type, id);
+        database.SetItem(newItem);
+        
+        Console.WriteLine($"New {type} successfully added with ID {id}. Current {type} count: {database.GetCount()}");
     }
 
     public void AddItemRating(int userId) {

@@ -1,7 +1,7 @@
 namespace Lab2;
 
-public class FileReader {
-    public static string[] GetItemFileParsedText(string fileName) {
+public class StandardFileReader : IFileReader {
+    public string[] GetItemFileParsedText(string fileName) {
         string[] lines = File.ReadAllLines(fileName);
 
         List<string> individualParts = new();
@@ -17,7 +17,7 @@ public class FileReader {
         return returnParts;
     }
 
-    public static List<KeyValuePair<string, int[]>> GetUserFileParsedText(string fileName) {
+    public List<KeyValuePair<string, int[]>> GetUserFileParsedText(string fileName) {
         List<KeyValuePair<string, int[]>> returnList = new();
 
         string[] lines = File.ReadAllLines(fileName);

@@ -3,9 +3,9 @@
 namespace Lab2;
 
 public class Program {
-    static IItemDatabase Items;
-    static IUserDatabase Users;
-    static IRatingMap Ratings;
+    static IItemDatabase items;
+    static IUserDatabase users;
+    static IRatingMap ratings;
     static IRepository repository;
     static ICatalog catalog;
     static ILogger logger;
@@ -18,15 +18,15 @@ public class Program {
         DoFillItemsDialogue();
         DoFillUsersAndRatingsDialogue();
 
-        repository = Repository.Initialize(Items, Users, Ratings);
+        repository = Repository.Initialize(items, users, ratings);
         
         catalog = new Catalog();
         recommender = new Recommender();
         logger = new Logger();
 
         Console.WriteLine("Setup complete!");
-        Console.WriteLine($"- Items added: {Items.GetCount()}");
-        Console.WriteLine($"- Users added: {Users.GetCount()}");
+        Console.WriteLine($"- Items added: {items.GetCount()}");
+        Console.WriteLine($"- Users added: {users.GetCount()}");
 
         while (true) { //Environment.Exit contained in the guest menu dialogue
             if (!logger.IsLoggedIn()) {
@@ -45,7 +45,7 @@ public class Program {
             string itemType = Console.ReadLine();
 
             try {
-                Items = ItemDatabaseInitializer.NewDatabase(itemFile, itemType);
+                items = ItemDatabaseFactory.NewDatabaseFromFile(itemFile, itemType);
                 return;
             } catch (ArgumentException) {
                 Console.WriteLine("Invalid inputs. Please try again.");
@@ -60,10 +60,11 @@ public class Program {
             Console.WriteLine($"Enter user type for this file ({User.GetUserTypes()}): ");
             string userType = Console.ReadLine();
 
-            var userTextParsed = FileReader.GetUserFileParsedText(userFile);
+            IFileReader fileReader = new StandardFileReader();
+            var userTextParsed = fileReader.GetUserFileParsedText(userFile);
             try {
-                Users = UserDatabaseInitializer.NewDatabase(userFile, userType);
-                Ratings = new RatingMap<Member, Book>(Users.MapNamesToIds(userTextParsed), Items);
+                users = UserDatabaseFactory.NewDatabaseFromFile(userFile, userType);
+                ratings = new RatingMap<Member, Book>(users.MapNamesToIds(userTextParsed), items);
                 return;
             } catch (ArgumentException) {
                 Console.WriteLine("Invalid inputs. Please try again.");
@@ -102,6 +103,8 @@ public class Program {
     }
 
     private static void DoLoggedInMenuDialogue() {
+        User loggedInUser = catalog.GetUserById("Member", logger.LoggedInId);
+        Console.WriteLine($"Welcome, {loggedInUser.Name}");
         PrintMemberMenu();
         string input = Console.ReadLine();
 
