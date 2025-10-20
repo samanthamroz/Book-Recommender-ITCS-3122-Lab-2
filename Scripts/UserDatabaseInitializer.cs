@@ -1,7 +1,7 @@
 namespace Lab2;
 
 public class UserDatabaseInitializer {
-    public static IUserDatabase NewDatabase(string userFile, string type) {
+    public static IDatabase NewDatabase(string userFile, string type) {
         var userTextParsed = FileReader.GetUserFileParsedText(userFile);
         switch (type.ToUpperInvariant()) {
             case "MEMBER":

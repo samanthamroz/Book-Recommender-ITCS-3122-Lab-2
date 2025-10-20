@@ -4,7 +4,7 @@ namespace Lab2;
 
 public class Program {
     static IItemDatabase Items;
-    static IUserDatabase Users;
+    static IUserDatabase<User> Users;
     static IRatingMap Ratings;
     static IRepository repository;
     static ICatalog catalog;

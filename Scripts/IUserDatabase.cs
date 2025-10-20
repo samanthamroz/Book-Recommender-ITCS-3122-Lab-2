@@ -1,6 +1,6 @@
 namespace Lab2;
 
-public interface IUserDatabase : IDatabase {
+public interface IUserDatabase<User> : IDatabase {
     void SetUser(User user);
     User GetUserById(int id);
     User GetUserByName(string name);

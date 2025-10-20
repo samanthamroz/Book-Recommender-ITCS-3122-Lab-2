@@ -1,6 +1,6 @@
 namespace Lab2;
 
-public class MemberDatabase : IUserDatabase {
+public class MemberDatabase : IUserDatabase<Member> {
     List<Member> members = new();
 
     //This constructor expects the parsed text array to be in the following format:
@@ -24,15 +24,22 @@ public class MemberDatabase : IUserDatabase {
         return returnStruct;
     }
 
-    public void SetUser(User user) {
-        throw new NotImplementedException();
+    public void SetUser(Member user) {
+        try {
+            Member doesIdExist = GetUserById(user.UserId);
+            members.Remove(doesIdExist); 
+        } catch (KeyNotFoundException) {
+            //
+        } finally {
+            members.Add(user);
+        }
     }
 
-    public User GetUserById(int id) {
-        throw new NotImplementedException();
+    public Member GetUserById(int id) {
+        throw new KeyNotFoundException();
     }
 
-    public User GetUserByName(string name) {
+    public Member GetUserByName(string name) {
         return members.First(m => m.Name == name);
     }
 
