@@ -4,7 +4,7 @@ namespace Lab2;
 
 public class Program {
     static IItemDatabase Items;
-    static IUserDatabase<User> Users;
+    static IUserDatabase Users;
     static IRatingMap Ratings;
     static IRepository repository;
     static ICatalog catalog;
@@ -41,7 +41,7 @@ public class Program {
         while (true) {
             Console.WriteLine("Enter item file path: ");
             string itemFile = Console.ReadLine();
-            Console.WriteLine("Enter item type for this file (BOOK): ");
+            Console.WriteLine($"Enter item type for this file ({Item.GetItemTypes()}): ");
             string itemType = Console.ReadLine();
 
             try {
@@ -57,7 +57,7 @@ public class Program {
         while (true) {
             Console.WriteLine("Enter user file path: ");
             string userFile = Console.ReadLine();
-            Console.WriteLine("Enter user type for this file (MEMBER): ");
+            Console.WriteLine($"Enter user type for this file ({User.GetUserTypes()}): ");
             string userType = Console.ReadLine();
 
             var userTextParsed = FileReader.GetUserFileParsedText(userFile);

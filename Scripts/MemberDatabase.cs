@@ -1,6 +1,6 @@
 namespace Lab2;
 
-public class MemberDatabase : IUserDatabase<Member> {
+public class MemberDatabase : IUserDatabase {
     List<Member> members = new();
 
     //This constructor expects the parsed text array to be in the following format:
@@ -24,23 +24,32 @@ public class MemberDatabase : IUserDatabase<Member> {
         return returnStruct;
     }
 
-    public void SetUser(Member user) {
-        try {
-            Member doesIdExist = GetUserById(user.UserId);
-            members.Remove(doesIdExist); 
-        } catch (KeyNotFoundException) {
-            //
-        } finally {
-            members.Add(user);
+    public void SetUser(User user) {
+        if (user is not Member member) {
+            throw new ArgumentException("MemberDatabase can only store Member objects");
         }
+            //shorthand "for each Member m, m.UserId == member.UserId, remove"
+        members.RemoveAll(m => m.UserId == member.UserId);
+        
+        members.Add(member);
     }
 
-    public Member GetUserById(int id) {
-        throw new KeyNotFoundException();
+    public User GetUserById(int id) {
+        foreach (Member m in members) {
+            if (m.UserId == id) {
+                return m;
+            }
+        }
+        throw new KeyNotFoundException($"No member found with ID {id}");
     }
 
-    public Member GetUserByName(string name) {
-        return members.First(m => m.Name == name);
+    public User GetUserByName(string name) {
+        foreach (Member m in members) {
+            if (m.Name == name) {
+                return m;
+            }
+        }
+        throw new KeyNotFoundException($"No member found with name {name}");
     }
 
     public int GetCount() {

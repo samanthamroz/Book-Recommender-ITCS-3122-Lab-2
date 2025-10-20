@@ -1,25 +1,25 @@
 namespace Lab2;
 
 public interface IRepository {
-    public abstract static IRepository Initialize(IItemDatabase items, IUserDatabase<User> users, IRatingMap ratings);
+    public abstract static IRepository Initialize(IItemDatabase items, IUserDatabase users, IRatingMap ratings);
     public abstract static IRepository Instance { get; }
     public IItemDatabase GetItemDatabaseOfType(string itemType);
-    public IUserDatabase<User> GetUserDatabaseOfType(string userType);
+    public IUserDatabase GetUserDatabaseOfType(string userType);
     public IRatingMap GetRatingMapOfType(string userType, string itemType);
 }
 
 public class Repository : IRepository {
     List<IItemDatabase> ItemDatabases;
-    List<IUserDatabase<User>> UserDatabases;
+    List<IUserDatabase> UserDatabases;
     List<IRatingMap> RatingMaps;
     private static IRepository? self;
-    private Repository(IItemDatabase items, IUserDatabase<User> users, IRatingMap ratings) {
+    private Repository(IItemDatabase items, IUserDatabase users, IRatingMap ratings) {
         ItemDatabases = [items];
         UserDatabases = [users];
         RatingMaps = [ratings];
     }
 
-    public static IRepository Initialize(IItemDatabase items, IUserDatabase<User> users, IRatingMap ratings) {
+    public static IRepository Initialize(IItemDatabase items, IUserDatabase users, IRatingMap ratings) {
         if (self == null) {
             self = new Repository(items, users, ratings);
         }
@@ -47,10 +47,10 @@ public class Repository : IRepository {
         throw new ArgumentException($"No database of type {itemType} exists");
     }
 
-    public IUserDatabase<User> GetUserDatabaseOfType(string userType) {
+    public IUserDatabase GetUserDatabaseOfType(string userType) {
         switch (userType.ToUpperInvariant()) {
             case "MEMBER":
-                foreach (IUserDatabase<User> db in UserDatabases) {
+                foreach (IUserDatabase db in UserDatabases) {
                     if (db is MemberDatabase) {
                         return db;
                     }

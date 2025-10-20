@@ -15,10 +15,11 @@ public class Catalog : ICatalog {
     }
 
     public void AddUser() {
-        Console.WriteLine("Enter type of user to add (MEMBER): ");
+        Console.WriteLine($"Enter type of user to add ({User.GetUserTypes()}): ");
         string type = Console.ReadLine();
+        type = type.ToLowerInvariant();
 
-        IUserDatabase<User> database;
+        IUserDatabase database;
         try {
             database = Repository.Instance.GetUserDatabaseOfType(type);
         } catch (ArgumentException) {
@@ -28,15 +29,35 @@ public class Catalog : ICatalog {
         
         int id = database.GetNextAvailableId();
 
-        Console.WriteLine($"Enter the new {type.ToLowerInvariant()}'s name: ");
+        Console.WriteLine($"Enter the new {type}'s name: ");
         string name = Console.ReadLine();
 
         Member newMember = new(id, name);
         database.SetUser(newMember);
+        Console.WriteLine($"New {type} successfully added. Current {type} count: {database.GetCount()}");
     }
 
     public void AddItem() {
+        Console.WriteLine($"Enter type of item to add ({Item.GetItemTypes()}): ");
+        string type = Console.ReadLine();
+        type = type.ToLowerInvariant();
+
+        IUserDatabase database;
+        try {
+            database = Repository.Instance.GetUserDatabaseOfType(type);
+        } catch (ArgumentException) {
+            Console.WriteLine($"Error: Database of type {type} does not exist.");
+            return;
+        }
         
+        int id = database.GetNextAvailableId();
+
+        Console.WriteLine($"Enter the new {type}'s name: ");
+        string name = Console.ReadLine();
+
+        Member newMember = new(id, name);
+        database.SetUser(newMember);
+        Console.WriteLine($"New {type} successfully added. Current {type} count: {database.GetCount()}");
     }
 
     public void AddItemRating(int userId) {
