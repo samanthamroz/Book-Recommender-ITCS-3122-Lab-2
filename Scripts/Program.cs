@@ -99,7 +99,7 @@ public class Program {
     }
 
     private static void PrintMemberMenu() {
-        Console.WriteLine("***************** MENU ******************\n* 1. Add a new member                   *\n* 2. Add a new book                     *\n* 3. Rate book                         *\n* 4. View ratings                      *\n* 5. See your top recommendations       *\n* 8. See a similar user's recommendations\n7. Logout                               *\n*****************************************");
+        Console.WriteLine("****************** MENU *******************\n* 1. Add a new member                     *\n* 2. Add a new book                       *\n* 3. Rate book                            *\n* 4. View ratings                         *\n* 5. See your top recommendations         *\n* 6. See a similar user's recommendations *\n* 7. Logout                               *\n*******************************************");
     }
 
     private static void DoLoggedInMenuDialogue() {

@@ -23,7 +23,7 @@ public class Recommender : IRecommender {
         Console.WriteLine("Here are the items that we think you'll be most likely to enjoy!\n----------");
         for (int i = 0; i < 5; i++) {
             Item item = repo.GetItem(topBookIds[i]);
-            Console.WriteLine($"{i}. {item}");
+            Console.WriteLine($"{i + 1}. {item}");
         }
         Console.WriteLine("------------");
     }
@@ -33,14 +33,25 @@ public class Recommender : IRecommender {
         List<int> myRatings = repo.GetUsersRatings(memberId);
 
         SortedSet<(int similarity, int userId)> topSimilarUsers = GetTopSimilarUsers(memberId, myRatings);
-        List<int> topUsersBooks = new List<int>{topSimilarUsers.Min.userId};
-        List<int> topBookIds = GetUsersBooksOrdered(memberId, topUsersBooks);
+        
+
+        int topUserId = -1;
+        //Get the top user with 5 books to recommend
+        foreach(var user in topSimilarUsers) {
+            List<int> userIdAsList = new List<int>{user.userId};
+            if (GetUsersBooksOrdered(memberId, userIdAsList).Count >= 5) {
+                topUserId = user.userId;
+            }
+        }
+
+        List<int> topUserIdAsList = new List<int>{topUserId};
+        List<int> topBookIds = GetUsersBooksOrdered(memberId, topUserIdAsList);
 
         Console.WriteLine($"You have similar taste in books as {repo.GetUser(topSimilarUsers.Min.userId)}");
         Console.WriteLine("Here are the items they enjoyed most!\n----------");
         for (int i = 0; i < 5; i++) {
             Item item = repo.GetItem(topBookIds[i]);
-            Console.WriteLine($"{i}. {item}");
+            Console.WriteLine($"{i + 1}. {item}");
         }
         Console.WriteLine("------------");
     }
@@ -88,17 +99,25 @@ public class Recommender : IRecommender {
             throw new Exception("My ratings must have the same length as other ratings");
         }
 
-        int similarity = 0; //0 is perfect similarity
+        int similarity = 0;
+        int booksCompared = 0;
 
         for (int i = 0; i < myRatings.Count; i++) {
             if (myRatings[i] == 0 || otherRatings[i] == 0) {
-                //one of them hasn't rated the book, so don't factor it in
                 continue;
             }
+            booksCompared++;
+            
             int rawDifference = Math.Abs(myRatings[i] - otherRatings[i]);
-            int exponent = rawDifference / 2;
-            similarity += (int)Math.Pow(2, exponent);
+            similarity += rawDifference;
         }
+
+        if (booksCompared < 5) {
+            return 10000; //not enough books to make a recommendation
+        }
+
+        similarity *= 100; //scale
+        similarity /= booksCompared; //similarity should scale for the amount of books we looked at
 
         return similarity;
     }
@@ -118,6 +137,11 @@ public class Recommender : IRecommender {
                     }
 
                     int rating = repo.GetUsersRatingOfItem(id, i);
+
+                    if (rating <= 0) {
+                        continue; //similar user didn't like the book
+                    }
+
                     int weightedRating = GetWeightedRating(rating);
 
                     if (!itemRatingSums.TryAdd(i, weightedRating)) {
@@ -139,6 +163,6 @@ public class Recommender : IRecommender {
             return -100;
         } 
 
-        return (int)Math.Pow(rating, 2);
+        return rating;// * Math.Abs(rating);
     }
 }
