@@ -25,6 +25,7 @@ public class Repository : IRepository {
             return self;
         }
     }
+    public static bool IsInitialized { get { return self != null; } }
 
     public int GetNextAvailableUserId() {
         try {

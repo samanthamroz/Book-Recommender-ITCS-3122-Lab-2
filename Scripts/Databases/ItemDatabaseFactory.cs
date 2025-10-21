@@ -7,11 +7,9 @@ public class ItemDatabaseFactory {
         var itemTextParsed = fileReader.GetItemFileParsedText(itemFile);
 
         List<Item> initialItems = new();
-        int id;
-        try {
+        int id = 0;
+        if (Repository.IsInitialized) {
             id = Repository.Instance.GetNextAvailableItemId();
-        } catch (InvalidOperationException) {
-            id = 0;
         }
 
         switch (type.ToUpperInvariant()) {

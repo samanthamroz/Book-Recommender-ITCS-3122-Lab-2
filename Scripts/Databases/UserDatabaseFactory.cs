@@ -6,11 +6,9 @@ public class UserDatabaseFactory {
         var userTextParsed = fileReader.GetUserFileParsedText(userFile);
 
         List<User> initialUsers = new();
-        int id;
-        try {
+        int id = 0;
+        if (Repository.IsInitialized) {
             id = Repository.Instance.GetNextAvailableUserId();
-        } catch (InvalidOperationException) {
-            id = 0;
         }
 
         switch (type.ToUpperInvariant()) {
