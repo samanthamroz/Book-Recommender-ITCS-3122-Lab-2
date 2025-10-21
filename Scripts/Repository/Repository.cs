@@ -1,3 +1,5 @@
+using System.Dynamic;
+
 namespace Lab2;
 
 public class Repository : IRepository {
@@ -68,5 +70,18 @@ public class Repository : IRepository {
     }
     public void SetUsersRatingOfItem(int userId, int itemId, int rating) {
         _ratingMap.SetItemRating(userId, itemId, rating);
+    }
+
+    public List<int> GetUsersRatings(int userId) {
+        List<int> ratings = new();
+        for (int i = 0; i < GetNextAvailableItemId(); i++) {
+            try {
+                Item item = GetItem(i);
+                ratings.Add(GetUsersRatingOfItem(userId, item.ItemId));
+            } catch (KeyNotFoundException) {
+                
+            }
+        }
+        return ratings;
     }
 }

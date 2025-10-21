@@ -13,4 +13,5 @@ public interface IRepository {
     Item GetItem(int itemId);
     int GetUsersRatingOfItem(int userId, int itemId);
     void SetUsersRatingOfItem(int userId, int itemId, int rating);
+    List<int> GetUsersRatings(int userId);
 }
