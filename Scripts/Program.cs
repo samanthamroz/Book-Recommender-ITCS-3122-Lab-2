@@ -64,7 +64,7 @@ public class Program {
             var userTextParsed = fileReader.GetUserFileParsedText(userFile);
             try {
                 users = UserDatabaseFactory.NewDatabaseFromFile(userFile, userType);
-                ratings = new RatingMap<Member, Book>(users.MapNamesToIds(userTextParsed), items);
+                ratings = new RatingMap(users.MapNamesToIds(userTextParsed), items);
                 return;
             } catch (ArgumentException) {
                 Console.WriteLine("Invalid inputs. Please try again.");
@@ -103,7 +103,7 @@ public class Program {
     }
 
     private static void DoLoggedInMenuDialogue() {
-        User loggedInUser = catalog.GetUserById("Member", logger.LoggedInId);
+        User loggedInUser = logger.LoggedInUser;
         Console.WriteLine($"Welcome, {loggedInUser.Name}");
         PrintMemberMenu();
         string input = Console.ReadLine();
@@ -116,10 +116,10 @@ public class Program {
                 catalog.AddItem();
                 break;
             case "3":
-                catalog.AddItemRating(logger.LoggedInId);
+                catalog.AddItemRating(logger.LoggedInUser);
                 break;
             case "4":
-                catalog.DisplayUsersRatings(logger.LoggedInId);
+                catalog.DisplayUsersRatings(logger.LoggedInUser);
                 break;
             case "5":
                 recommender.DisplayRecommendations(logger.LoggedInId);

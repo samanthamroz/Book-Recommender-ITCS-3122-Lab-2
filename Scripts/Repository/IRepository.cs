@@ -3,7 +3,14 @@ namespace Lab2;
 public interface IRepository {
     public abstract static IRepository Initialize(IItemDatabase items, IUserDatabase users, IRatingMap ratings);
     public abstract static IRepository Instance { get; }
-    public IItemDatabase GetItemDatabaseOfType(string itemType);
-    public IUserDatabase GetUserDatabaseOfType(string userType);
-    public IRatingMap GetRatingMapOfType(string userType, string itemType);
+    int GetNextAvailableUserId();
+    int GetNextAvailableItemId();
+    int GetUserCount();
+    int GetItemCount();
+    void AddUser(User user);
+    void AddItem(Item item);
+    User GetUser(int userId);
+    Item GetItem(int itemId);
+    int GetUsersRatingOfItem(int userId, int itemId);
+    void SetUsersRatingOfItem(int userId, int itemId, int rating);
 }

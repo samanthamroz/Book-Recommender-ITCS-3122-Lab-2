@@ -11,4 +11,8 @@ public class Book : Item {
         Author = author;
         YearPublished = yearPublished;
     }
+
+    public override string ToString() {
+        return $"{Title} | By {Author} | Published {YearPublished}";
+    }
 }

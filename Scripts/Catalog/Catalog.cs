@@ -3,36 +3,20 @@ using System.Data;
 namespace Lab2;
 
 public class Catalog : ICatalog {
-    public Catalog() {
-        
-    }
-
     public void AddUser() {
         Console.WriteLine($"Enter type of user to add ({User.GetUserTypes()}): ");
         string type = Console.ReadLine();
         type = type.ToLowerInvariant();
-
-        IUserDatabase database;
-        try {
-            database = Repository.Instance.GetUserDatabaseOfType(type);
-        } catch (ArgumentException) {
-            Console.WriteLine($"Error: Database of type {type} does not exist.");
-            return;
-        }
         
-        int id = database.GetNextAvailableId();
+        int id = Repository.Instance.GetNextAvailableUserId();
+        try {
+            User newUser = UserFactory.CreateUserFromConsoleInput(type, id);
+            Repository.Instance.AddUser(newUser);
 
-        Console.WriteLine($"Enter the new {type}'s name: ");
-        string name = Console.ReadLine();
-
-        Member newMember = new(id, name);
-        database.SetUser(newMember);
-        Console.WriteLine($"New {type} successfully added with ID {id}. Current {type} count: {database.GetCount()}");
-    }
-
-    public User GetUserById(string type, int id) {
-        IUserDatabase database = Repository.Instance.GetUserDatabaseOfType(type);
-        return database.GetUserById(id);
+            Console.WriteLine($"New {type} successfully added with ID {id}. Current user count: {Repository.Instance.GetUserCount()}");
+        } catch (ArgumentException) {
+            Console.WriteLine("Invalid inputs for creating a new user.");
+        }
     }
 
     public void AddItem() {
@@ -40,27 +24,65 @@ public class Catalog : ICatalog {
         string type = Console.ReadLine();
         type = type.ToLowerInvariant();
 
-        IItemDatabase database;
+        int id = Repository.Instance.GetNextAvailableItemId();
         try {
-            database = Repository.Instance.GetItemDatabaseOfType(type);
+            Item newItem = ItemFactory.CreateItemFromConsoleInput(type, id);
+            Repository.Instance.AddItem(newItem);
+        
+            Console.WriteLine($"New {type} successfully added with ID {id}. Current {type} count: {Repository.Instance.GetItemCount()}");
         } catch (ArgumentException) {
-            Console.WriteLine($"Error: Database of type {type} does not exist.");
+            Console.WriteLine("Invalid inputs for creating a new item.");
+        }
+    }
+
+    public void AddItemRating(User loggedInUser) {
+        Console.WriteLine("Enter the ID of the item you want to rate: ");
+        string itemId = Console.ReadLine();
+        Item itemFound;
+
+        try {
+            itemFound = Repository.Instance.GetItem(int.Parse(itemId));
+        } catch (FormatException) {
+            Console.WriteLine($"Input {itemId} is not valid as an item ID.");
+            return;
+        } catch (KeyNotFoundException) {
+            Console.WriteLine($"Item with ID {itemId} does not exist.");
             return;
         }
         
-        int id = database.GetNextAvailableId();
+        Console.WriteLine($"Enter your rating for {itemFound}: ");
+        string input = Console.ReadLine();
 
-        Item newItem = ItemFactory.CreateItemFromConsoleInput(type, id);
-        database.SetItem(newItem);
-        
-        Console.WriteLine($"New {type} successfully added with ID {id}. Current {type} count: {database.GetCount()}");
+        int rating;
+        try {
+            rating = int.Parse(input);
+        } catch (FormatException) {
+            Console.WriteLine($"Input {input} is not valid as a rating.");
+            return;
+        }
+
+        try {
+            Repository.Instance.SetUsersRatingOfItem(loggedInUser.UserId, itemFound.ItemId, rating);
+        } catch (ArgumentException) {
+            Console.WriteLine($"Ratings must be one of the following: -5, -3, 0, 1, 3, 5");
+            return;
+        }
+
+        Console.WriteLine($"You rated {itemFound} a {rating}!");
     }
 
-    public void AddItemRating(int userId) {
-        
-    }
-
-    public void DisplayUsersRatings(int userId) {
-        
+    public void DisplayUsersRatings(User loggedInUser) {
+        IRepository repo = Repository.Instance;
+        Console.WriteLine("Your ratings:\n----------");
+        for (int i = 0; i < repo.GetNextAvailableItemId(); i++) {
+            try {
+                Item itemFound = repo.GetItem(i);
+                int rating = repo.GetUsersRatingOfItem(loggedInUser.UserId, i);
+                Console.WriteLine($"ID: {itemFound.ItemId} || Your Rating: {rating} || {itemFound}");
+            } catch (KeyNotFoundException) {
+                
+            }
+        }
+        Console.WriteLine("----------");
     }
 }

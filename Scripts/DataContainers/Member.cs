@@ -5,4 +5,7 @@ public class Member : User {
         UserId = userId;
         Name = name;
     }
+    public override string ToString() {
+        return $"{Name} (Member ID: {UserId})";
+    }
 }

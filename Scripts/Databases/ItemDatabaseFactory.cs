@@ -5,11 +5,27 @@ public class ItemDatabaseFactory {
         IFileReader fileReader = new StandardFileReader();
         
         var itemTextParsed = fileReader.GetItemFileParsedText(itemFile);
+
+        List<Item> initialItems = new();
+        int id;
+        try {
+            id = Repository.Instance.GetNextAvailableItemId();
+        } catch (InvalidOperationException) {
+            id = 0;
+        }
+
         switch (type.ToUpperInvariant()) {
             case "BOOK":
-                return new BookDatabase(itemTextParsed);
+                for (int i = 0; i < itemTextParsed.Length; i += 3) {
+                    Book book = new(id, itemTextParsed[i + 1], itemTextParsed[i], itemTextParsed[i + 2]);
+                    initialItems.Add(book);
+                    id++;
+                }
+                break;
             default:
                 throw new ArgumentException();
         }
+
+        return new ItemDatabase(initialItems);
     }
 }

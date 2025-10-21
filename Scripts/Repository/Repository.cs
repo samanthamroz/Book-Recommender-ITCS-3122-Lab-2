@@ -1,14 +1,14 @@
 namespace Lab2;
 
 public class Repository : IRepository {
-    List<IItemDatabase> ItemDatabases;
-    List<IUserDatabase> UserDatabases;
-    List<IRatingMap> RatingMaps;
+    IItemDatabase _itemDatabase;
+    IUserDatabase _userDatabase;
+    IRatingMap _ratingMap;
     private static IRepository? self;
     private Repository(IItemDatabase items, IUserDatabase users, IRatingMap ratings) {
-        ItemDatabases = [items];
-        UserDatabases = [users];
-        RatingMaps = [ratings];
+        _itemDatabase = items;
+        _userDatabase = users;
+        _ratingMap = ratings;
     }
 
     public static IRepository Initialize(IItemDatabase items, IUserDatabase users, IRatingMap ratings) {
@@ -26,56 +26,46 @@ public class Repository : IRepository {
         }
     }
 
-    public IItemDatabase GetItemDatabaseOfType(string itemType) {
-        switch (itemType.ToUpperInvariant()) {
-            case "BOOK":
-                foreach (IItemDatabase db in ItemDatabases) {
-                    if (db is BookDatabase) {
-                        return db;
-                    }
-                }
-                break;
+    public int GetNextAvailableUserId() {
+        try {
+            return _userDatabase.GetNextAvailableId();
+        } catch (IndexOutOfRangeException) {
+            return 0;
         }
-        throw new ArgumentException($"No database of type {itemType} exists");
+    }
+    public int GetNextAvailableItemId() {
+        try {
+            return _itemDatabase.GetNextAvailableId();
+        } catch (IndexOutOfRangeException) {
+            return 0;
+        }
     }
 
-    public IUserDatabase GetUserDatabaseOfType(string userType) {
-        switch (userType.ToUpperInvariant()) {
-            case "MEMBER":
-                foreach (IUserDatabase db in UserDatabases) {
-                    if (db is MemberDatabase) {
-                        return db;
-                    }
-                }
-                break;
-        }
-        throw new ArgumentException($"No database of type {userType} exists");
+    public int GetUserCount() {
+        return _userDatabase.GetCount();
+    }
+    public int GetItemCount() {
+        return _itemDatabase.GetCount();
     }
 
-    public IRatingMap GetRatingMapOfType(string userType, string itemType) {
-        Type userTypeObj = GetTypeFromString(userType);
-        Type itemTypeObj = GetTypeFromString(itemType);
-        
-        if (userTypeObj == null || itemTypeObj == null) {
-            throw new ArgumentException($"Invalid user type '{userType}' or item type '{itemType}'");
-        }
-        
-        Type targetRatingMapType = typeof(RatingMap<,>).MakeGenericType(userTypeObj, itemTypeObj);
-        
-        foreach (IRatingMap map in RatingMaps) {
-            if (targetRatingMapType.IsInstanceOfType(map)) {
-                return map;
-            }
-        }
-        
-        throw new ArgumentException($"No rating map of type RatingMap<{userType}, {itemType}> exists");
+    public void AddUser(User user) {
+        _userDatabase.SetUser(user);
+    }
+    public void AddItem(Item item) {
+        _itemDatabase.SetItem(item);
     }
 
-    private Type? GetTypeFromString(string typeName) {
-        return typeName.ToUpperInvariant() switch {
-            "MEMBER" => typeof(Member),
-            "BOOK" => typeof(Book),
-            _ => null
-        };
+    public User GetUser(int userId) {
+        return _userDatabase.GetUserById(userId);
+    }
+    public Item GetItem(int itemId) {
+        return _itemDatabase.GetItemById(itemId);
+    }
+
+    public int GetUsersRatingOfItem(int userId, int itemId) {
+        return _ratingMap.GetItemRating(userId, itemId);
+    }
+    public void SetUsersRatingOfItem(int userId, int itemId, int rating) {
+        _ratingMap.SetItemRating(userId, itemId, rating);
     }
 }
