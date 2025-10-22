@@ -15,13 +15,13 @@ public class Program {
         Console.WriteLine("Welcome to the Book Recommendation Program!");
         Console.WriteLine("Begin setup...");
 
+        DoFillItemsDialogue();
+        DoFillUsersAndRatingsDialogue();
+
         IItemRepository itemRepository = new ItemRepository(items);
         IUserRepository userRepository = new UserRepository(users);
         IRatingMapRepository ratingMapRepository = new RatingMapRepository(ratings);
         repositories = new RepositoryCollection(itemRepository, userRepository, ratingMapRepository);
-
-        DoFillItemsDialogue();
-        DoFillUsersAndRatingsDialogue();
         
         catalog = new Catalog(repositories);
         recommender = new Recommender(repositories);
@@ -48,7 +48,7 @@ public class Program {
             string itemType = Console.ReadLine();
 
             try {
-                items = ItemDatabaseFactory.NewDatabaseFromFile(itemFile, itemType, repositories.ItemRepository.GetNextAvailableItemId());
+                items = ItemDatabaseFactory.NewDatabaseFromFile(itemFile, itemType, 0);
                 return;
             } catch (ArgumentException) {
                 Console.WriteLine("Invalid inputs. Please try again.");
@@ -66,7 +66,7 @@ public class Program {
             IFileReader fileReader = new StandardFileReader();
             var userTextParsed = fileReader.GetUserFileParsedText(userFile);
             try {
-                users = UserDatabaseFactory.NewDatabaseFromFile(userFile, userType, repositories.UserRepository.GetNextAvailableUserId());
+                users = UserDatabaseFactory.NewDatabaseFromFile(userFile, userType, 0);
                 ratings = new RatingMap(users.MapNamesToIds(userTextParsed), items);
                 return;
             } catch (ArgumentException) {

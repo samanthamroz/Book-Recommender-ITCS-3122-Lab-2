@@ -6,11 +6,7 @@ public class UserRepository : IUserRepository {
         _userDatabase = users;
     }
     public int GetNextAvailableUserId() {
-        try {
-            return _userDatabase.GetNextAvailableId();
-        } catch (IndexOutOfRangeException) {
-            return 0;
-        }
+        return _userDatabase.GetNextAvailableId();
     }
 
     public int GetUserCount() {

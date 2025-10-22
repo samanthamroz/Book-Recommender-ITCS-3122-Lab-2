@@ -67,6 +67,7 @@ public class UserDatabase : IUserDatabase {
     }
 
     public int GetNextAvailableId() {
+        if (users.Count == 0) return 0;
         return users[^1].UserId + 1;
     }
 }

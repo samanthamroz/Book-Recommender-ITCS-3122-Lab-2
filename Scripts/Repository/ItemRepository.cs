@@ -7,11 +7,7 @@ public class ItemRepository : IItemRepository {
     }
 
     public int GetNextAvailableItemId() {
-        try {
-            return _itemDatabase.GetNextAvailableId();
-        } catch (IndexOutOfRangeException) {
-            return 0;
-        }
+        return _itemDatabase.GetNextAvailableId();
     }
 
     public int GetItemCount() {

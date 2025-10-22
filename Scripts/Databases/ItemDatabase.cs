@@ -14,6 +14,7 @@ public class ItemDatabase : IItemDatabase {
     }
 
     public int GetNextAvailableId() {
+        if (items.Count == 0) return 0;
         return items[^1].ItemId + 1;
     }
 
