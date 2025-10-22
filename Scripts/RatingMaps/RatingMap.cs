@@ -61,7 +61,7 @@ public class RatingMap : IRatingMap {
         return 0;
     }
 
-    public Dictionary<int, int> GetUsersRatings(int memberId) {
+    public IReadOnlyDictionary<int, int> GetUsersRatings(int memberId) {
         return Ratings[memberId];
     }
 }

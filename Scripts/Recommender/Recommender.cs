@@ -16,7 +16,7 @@ public class Recommender : IRecommender {
         //member difference score = difference between that member's rating and this member's rating
         //remember top 5 lowest user scores
         //for each of those members, pick their highest rating books
-        List<int> myRatings = _ratingMapRepository.GetUsersRatings(memberId);
+        var myRatings = _ratingMapRepository.GetUsersRatings(memberId);
 
         SortedSet<(int similarity, int userId)> topSimilarUsers = GetTopSimilarUsers(memberId, myRatings);
         List<int> similarUserIds = new();
@@ -34,7 +34,7 @@ public class Recommender : IRecommender {
     }
 
     public void DisplaySingleSimilarUserRecommendations(int memberId) {
-        List<int> myRatings = _ratingMapRepository.GetUsersRatings(memberId);
+        var myRatings = _ratingMapRepository.GetUsersRatings(memberId);
 
         SortedSet<(int similarity, int userId)> topSimilarUsers = GetTopSimilarUsers(memberId, myRatings);
         
@@ -60,10 +60,10 @@ public class Recommender : IRecommender {
         Console.WriteLine("------------");
     }
 
-    private SortedSet<(int similarity, int userId)> GetTopSimilarUsers(int memberId, List<int> myRatings) {
+    private SortedSet<(int similarity, int userId)> GetTopSimilarUsers(int memberId, IReadOnlyDictionary<int, int> myRatings) {
         SortedSet<(int similarity, int userId)> topSimilarUsers = new();
 
-        List<int> otherRatings;
+        IReadOnlyDictionary<int, int> otherRatings;
         for (int i = 0; i < _userRepository.GetNextAvailableUserId(); i++) {
             if (i == memberId) {
                 continue; //skip self
@@ -74,7 +74,7 @@ public class Recommender : IRecommender {
                 otherUser = _userRepository.GetUser(i);
                 otherRatings = _ratingMapRepository.GetUsersRatings(otherUser.UserId);
             } catch (KeyNotFoundException) {
-                //ID didn't have a user associated with it
+                //this ID didn't have a user associated with it
                 continue;
             }
 
@@ -96,7 +96,7 @@ public class Recommender : IRecommender {
         return topSimilarUsers;
     }
 
-    private int GetSimilarity(List<int> myRatings, List<int> otherRatings) {
+    private int GetSimilarity(IReadOnlyDictionary<int, int> myRatings, IReadOnlyDictionary<int, int> otherRatings) {
         if (myRatings.Count != otherRatings.Count) {
             throw new Exception("My ratings must have the same length as other ratings");
         }
@@ -104,13 +104,15 @@ public class Recommender : IRecommender {
         int similarity = 0;
         int booksCompared = 0;
 
-        for (int i = 0; i < myRatings.Count; i++) {
-            if (myRatings[i] == 0 || otherRatings[i] == 0) {
-                continue;
+        foreach (var kvp in myRatings) {
+            int myRating = kvp.Value;
+            int otherRating = otherRatings[kvp.Key];
+            if (myRating == 0 || otherRating == 0) {
+                continue; //either one didn't read this, so ignore it
             }
             booksCompared++;
             
-            int rawDifference = Math.Abs(myRatings[i] - otherRatings[i]);
+            int rawDifference = Math.Abs(myRating - otherRating);
             similarity += rawDifference;
         }
 

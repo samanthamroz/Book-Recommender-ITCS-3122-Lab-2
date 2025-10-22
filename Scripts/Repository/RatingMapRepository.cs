@@ -13,12 +13,7 @@ public class RatingMapRepository : IRatingMapRepository {
     public void SetUsersRatingOfItem(int userId, int itemId, int rating) {
         _ratingMap.SetItemRating(userId, itemId, rating);
     }
-    public List<int> GetUsersRatings(int userId) {
-        var ratingDict = _ratingMap.GetUsersRatings(userId);
-        List<int> ratings = new();
-        foreach (var kvp in ratingDict) {
-            ratings.Add(kvp.Value);
-        }
-        return ratings;
+    public IReadOnlyDictionary<int, int> GetUsersRatings(int userId) {
+        return _ratingMap.GetUsersRatings(userId);
     }
 }

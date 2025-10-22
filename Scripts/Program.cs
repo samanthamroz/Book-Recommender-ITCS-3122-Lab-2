@@ -15,13 +15,13 @@ public class Program {
         Console.WriteLine("Welcome to the Book Recommendation Program!");
         Console.WriteLine("Begin setup...");
 
-        DoFillItemsDialogue();
-        DoFillUsersAndRatingsDialogue();
-
         IItemRepository itemRepository = new ItemRepository(items);
         IUserRepository userRepository = new UserRepository(users);
         IRatingMapRepository ratingMapRepository = new RatingMapRepository(ratings);
         repositories = new RepositoryCollection(itemRepository, userRepository, ratingMapRepository);
+
+        DoFillItemsDialogue();
+        DoFillUsersAndRatingsDialogue();
         
         catalog = new Catalog(repositories);
         recommender = new Recommender(repositories);
