@@ -12,4 +12,7 @@ public static class UserFactory {
                 throw new ArgumentException($"Unknown user type: {userType}");
         }
     }
+    public static string GetUserTypes() {
+        return "MEMBER";
+    }
 }

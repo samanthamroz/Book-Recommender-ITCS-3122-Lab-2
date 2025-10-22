@@ -4,6 +4,7 @@ public class Recommender : IRecommender {
     private IRatingMapRepository _ratingMapRepository;
     private IUserRepository _userRepository;
     private IItemRepository _itemRepository;
+    private const int ITEMS_NEEDED_TO_RECOMMEND = 5;
     public Recommender(RepositoryCollection repositoryCollection) {
         _ratingMapRepository = repositoryCollection.RatingMapRepository;
         _userRepository = repositoryCollection.UserRepository;
@@ -52,7 +53,7 @@ public class Recommender : IRecommender {
 
         Console.WriteLine($"You have similar taste in books as {_userRepository.GetUser(topSimilarUsers.Min.userId)}");
         Console.WriteLine("Here are the items they enjoyed most!\n----------");
-        for (int i = 0; i < 5; i++) {
+        for (int i = 0; i < ITEMS_NEEDED_TO_RECOMMEND; i++) {
             Item item = _itemRepository.GetItem(topBookIds[i]);
             Console.WriteLine($"{i + 1}. {item}");
         }
@@ -79,7 +80,7 @@ public class Recommender : IRecommender {
 
             int similarity = GetSimilarity(myRatings, otherRatings);
 
-            if (topSimilarUsers.Count < 5) {
+            if (topSimilarUsers.Count < ITEMS_NEEDED_TO_RECOMMEND) {
                 topSimilarUsers.Add((similarity, otherUser.UserId));
             } else {
                 // Get the worst (highest similarity score) in our top 5
@@ -113,8 +114,8 @@ public class Recommender : IRecommender {
             similarity += rawDifference;
         }
 
-        if (booksCompared < 5) {
-            return 10000; //not enough books to make a recommendation
+        if (booksCompared < ITEMS_NEEDED_TO_RECOMMEND) {
+            return int.MaxValue; //not enough books to make a recommendation
         }
 
         similarity *= 100; //scale

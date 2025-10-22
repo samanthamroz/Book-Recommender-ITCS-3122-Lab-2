@@ -13,7 +13,7 @@ public class Catalog : ICatalog {
     } 
 
     public void AddUser() {
-        Console.WriteLine($"Enter type of user to add ({User.GetUserTypes()}): ");
+        Console.WriteLine($"Enter type of user to add ({UserFactory.GetUserTypes()}): ");
         string type = Console.ReadLine();
         type = type.ToLowerInvariant();
         
@@ -29,7 +29,7 @@ public class Catalog : ICatalog {
     }
 
     public void AddItem() {
-        Console.WriteLine($"Enter type of item to add ({Item.GetItemTypes()}): ");
+        Console.WriteLine($"Enter type of item to add ({ItemFactory.GetItemTypes()}): ");
         string type = Console.ReadLine();
         type = type.ToLowerInvariant();
 

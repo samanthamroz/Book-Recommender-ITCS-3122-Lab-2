@@ -16,4 +16,7 @@ public static class ItemFactory {
                 throw new ArgumentException($"Unknown item type: {itemType}");
         }
     }
+    public static string GetItemTypes() {
+        return "BOOK";
+    }
 }

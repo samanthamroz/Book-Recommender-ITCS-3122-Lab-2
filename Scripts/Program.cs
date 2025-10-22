@@ -44,7 +44,7 @@ public class Program {
         while (true) {
             Console.WriteLine("Enter item file path: ");
             string itemFile = Console.ReadLine();
-            Console.WriteLine($"Enter item type for this file ({Item.GetItemTypes()}): ");
+            Console.WriteLine($"Enter item type for this file ({ItemFactory.GetItemTypes()}): ");
             string itemType = Console.ReadLine();
 
             try {
@@ -60,7 +60,7 @@ public class Program {
         while (true) {
             Console.WriteLine("Enter user file path: ");
             string userFile = Console.ReadLine();
-            Console.WriteLine($"Enter user type for this file ({User.GetUserTypes()}): ");
+            Console.WriteLine($"Enter user type for this file ({UserFactory.GetUserTypes()}): ");
             string userType = Console.ReadLine();
 
             IFileReader fileReader = new StandardFileReader();
