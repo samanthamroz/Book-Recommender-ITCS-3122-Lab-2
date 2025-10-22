@@ -1,8 +1,13 @@
 namespace Lab2;
 
 public class Recommender : IRecommender {
-    public Recommender() {
-        
+    private IRatingMapRepository _ratingMapRepository;
+    private IUserRepository _userRepository;
+    private IItemRepository _itemRepository;
+    public Recommender(RepositoryCollection repositoryCollection) {
+        _ratingMapRepository = repositoryCollection.RatingMapRepository;
+        _userRepository = repositoryCollection.UserRepository;
+        _itemRepository = repositoryCollection.ItemRepository;
     } 
     
     public void DisplayGlobalRecommendations(int memberId) {
@@ -10,8 +15,7 @@ public class Recommender : IRecommender {
         //member difference score = difference between that member's rating and this member's rating
         //remember top 5 lowest user scores
         //for each of those members, pick their highest rating books
-        IRepository repo = Repository.Instance;
-        List<int> myRatings = repo.GetUsersRatings(memberId);
+        List<int> myRatings = _ratingMapRepository.GetUsersRatings(memberId);
 
         SortedSet<(int similarity, int userId)> topSimilarUsers = GetTopSimilarUsers(memberId, myRatings);
         List<int> similarUserIds = new();
@@ -22,15 +26,14 @@ public class Recommender : IRecommender {
         List<int> topBookIds = GetUsersBooksOrdered(memberId, similarUserIds);
         Console.WriteLine("Here are the items that we think you'll be most likely to enjoy!\n----------");
         for (int i = 0; i < 5; i++) {
-            Item item = repo.GetItem(topBookIds[i]);
+            Item item = _itemRepository.GetItem(topBookIds[i]);
             Console.WriteLine($"{i + 1}. {item}");
         }
         Console.WriteLine("------------");
     }
 
     public void DisplaySingleSimilarUserRecommendations(int memberId) {
-        IRepository repo = Repository.Instance;
-        List<int> myRatings = repo.GetUsersRatings(memberId);
+        List<int> myRatings = _ratingMapRepository.GetUsersRatings(memberId);
 
         SortedSet<(int similarity, int userId)> topSimilarUsers = GetTopSimilarUsers(memberId, myRatings);
         
@@ -47,10 +50,10 @@ public class Recommender : IRecommender {
         List<int> topUserIdAsList = new List<int>{topUserId};
         List<int> topBookIds = GetUsersBooksOrdered(memberId, topUserIdAsList);
 
-        Console.WriteLine($"You have similar taste in books as {repo.GetUser(topSimilarUsers.Min.userId)}");
+        Console.WriteLine($"You have similar taste in books as {_userRepository.GetUser(topSimilarUsers.Min.userId)}");
         Console.WriteLine("Here are the items they enjoyed most!\n----------");
         for (int i = 0; i < 5; i++) {
-            Item item = repo.GetItem(topBookIds[i]);
+            Item item = _itemRepository.GetItem(topBookIds[i]);
             Console.WriteLine($"{i + 1}. {item}");
         }
         Console.WriteLine("------------");
@@ -59,18 +62,16 @@ public class Recommender : IRecommender {
     private SortedSet<(int similarity, int userId)> GetTopSimilarUsers(int memberId, List<int> myRatings) {
         SortedSet<(int similarity, int userId)> topSimilarUsers = new();
 
-        IRepository repo = Repository.Instance;
-
         List<int> otherRatings;
-        for (int i = 0; i < repo.GetNextAvailableUserId(); i++) {
+        for (int i = 0; i < _userRepository.GetNextAvailableUserId(); i++) {
             if (i == memberId) {
                 continue; //skip self
             }
 
             User otherUser;
             try {
-                otherUser = repo.GetUser(i);
-                otherRatings = repo.GetUsersRatings(otherUser.UserId);
+                otherUser = _userRepository.GetUser(i);
+                otherRatings = _ratingMapRepository.GetUsersRatings(otherUser.UserId);
             } catch (KeyNotFoundException) {
                 //ID didn't have a user associated with it
                 continue;
@@ -124,19 +125,17 @@ public class Recommender : IRecommender {
 
     private List<int> GetUsersBooksOrdered(int memberId, List<int> similarUserIds) {
         Dictionary<int, int> itemRatingSums = new(); // itemId, sum of ratings
-        
-        IRepository repo = Repository.Instance;
 
         foreach (int id in similarUserIds) {
-            for (int i = 0; i < repo.GetNextAvailableItemId(); i++) {
+            for (int i = 0; i < _itemRepository.GetNextAvailableItemId(); i++) {
                 Item item;
                 try {
-                    item = repo.GetItem(i);
-                    if (repo.GetUsersRatingOfItem(memberId, i) != 0) {
+                    item = _itemRepository.GetItem(i);
+                    if (_ratingMapRepository.GetUsersRatingOfItem(memberId, i) != 0) {
                         continue; //user has already read this book
                     }
 
-                    int rating = repo.GetUsersRatingOfItem(id, i);
+                    int rating = _ratingMapRepository.GetUsersRatingOfItem(id, i);
 
                     if (rating <= 0) {
                         continue; //similar user didn't like the book

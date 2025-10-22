@@ -2,7 +2,7 @@ namespace Lab2;
 
 public class RatingMap : IRatingMap {
     //Member id, (book id, rating)
-    Dictionary<int, Dictionary<int, int>> Ratings = new();
+    private Dictionary<int, Dictionary<int, int>> Ratings = new();
 
 
     //Kvps must be in the format (memberId, [rating1, rating2...])|
@@ -59,5 +59,9 @@ public class RatingMap : IRatingMap {
         //happens if the member doesn't exist
         SetItemRating(memberId, itemId, 0);
         return 0;
+    }
+
+    public Dictionary<int, int> GetUsersRatings(int memberId) {
+        return Ratings[memberId];
     }
 }

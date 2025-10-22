@@ -3,17 +3,26 @@ using System.Data;
 namespace Lab2;
 
 public class Catalog : ICatalog {
+    private IRatingMapRepository _ratingMapRepository;
+    private IUserRepository _userRepository;
+    private IItemRepository _itemRepository;
+    public Catalog(RepositoryCollection repositoryCollection) {
+        _ratingMapRepository = repositoryCollection.RatingMapRepository;
+        _userRepository = repositoryCollection.UserRepository;
+        _itemRepository = repositoryCollection.ItemRepository;
+    } 
+
     public void AddUser() {
         Console.WriteLine($"Enter type of user to add ({User.GetUserTypes()}): ");
         string type = Console.ReadLine();
         type = type.ToLowerInvariant();
         
-        int id = Repository.Instance.GetNextAvailableUserId();
+        int id = _userRepository.GetNextAvailableUserId();
         try {
             User newUser = UserFactory.CreateUserFromConsoleInput(type, id);
-            Repository.Instance.AddUser(newUser);
+            _userRepository.AddUser(newUser);
 
-            Console.WriteLine($"New {type} successfully added with ID {id}. Current user count: {Repository.Instance.GetUserCount()}");
+            Console.WriteLine($"New {type} successfully added with ID {id}. Current user count: {_userRepository.GetUserCount()}");
         } catch (ArgumentException) {
             Console.WriteLine("Invalid inputs for creating a new user.");
         }
@@ -24,12 +33,12 @@ public class Catalog : ICatalog {
         string type = Console.ReadLine();
         type = type.ToLowerInvariant();
 
-        int id = Repository.Instance.GetNextAvailableItemId();
+        int id = _itemRepository.GetNextAvailableItemId();
         try {
             Item newItem = ItemFactory.CreateItemFromConsoleInput(type, id);
-            Repository.Instance.AddItem(newItem);
+            _itemRepository.AddItem(newItem);
         
-            Console.WriteLine($"New {type} successfully added with ID {id}. Current {type} count: {Repository.Instance.GetItemCount()}");
+            Console.WriteLine($"New {type} successfully added with ID {id}. Current {type} count: {_itemRepository.GetItemCount()}");
         } catch (ArgumentException) {
             Console.WriteLine("Invalid inputs for creating a new item.");
         }
@@ -41,7 +50,7 @@ public class Catalog : ICatalog {
         Item itemFound;
 
         try {
-            itemFound = Repository.Instance.GetItem(int.Parse(itemId));
+            itemFound = _itemRepository.GetItem(int.Parse(itemId));
         } catch (FormatException) {
             Console.WriteLine($"Input {itemId} is not valid as an item ID.");
             return;
@@ -62,7 +71,7 @@ public class Catalog : ICatalog {
         }
 
         try {
-            Repository.Instance.SetUsersRatingOfItem(loggedInUser.UserId, itemFound.ItemId, rating);
+            _ratingMapRepository.SetUsersRatingOfItem(loggedInUser.UserId, itemFound.ItemId, rating);
         } catch (ArgumentException) {
             Console.WriteLine($"Ratings must be one of the following: -5, -3, 0, 1, 3, 5");
             return;
@@ -72,12 +81,11 @@ public class Catalog : ICatalog {
     }
 
     public void DisplayUsersRatings(User loggedInUser) {
-        IRepository repo = Repository.Instance;
         Console.WriteLine("Your ratings:\n----------");
-        for (int i = 0; i < repo.GetNextAvailableItemId(); i++) {
+        for (int i = 0; i < _itemRepository.GetNextAvailableItemId(); i++) {
             try {
-                Item itemFound = repo.GetItem(i);
-                int rating = repo.GetUsersRatingOfItem(loggedInUser.UserId, i);
+                Item itemFound = _itemRepository.GetItem(i);
+                int rating = _ratingMapRepository.GetUsersRatingOfItem(loggedInUser.UserId, i);
                 Console.WriteLine($"ID: {itemFound.ItemId} || Your Rating: {rating} || {itemFound}");
             } catch (KeyNotFoundException) {
                 

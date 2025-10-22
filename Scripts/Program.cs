@@ -6,7 +6,7 @@ public class Program {
     static IItemDatabase items;
     static IUserDatabase users;
     static IRatingMap ratings;
-    static IRepository repository;
+    static RepositoryCollection repositories;
     static ICatalog catalog;
     static ILogger logger;
     static IRecommender recommender;
@@ -18,11 +18,14 @@ public class Program {
         DoFillItemsDialogue();
         DoFillUsersAndRatingsDialogue();
 
-        repository = Repository.Initialize(items, users, ratings);
+        IItemRepository itemRepository = new ItemRepository(items);
+        IUserRepository userRepository = new UserRepository(users);
+        IRatingMapRepository ratingMapRepository = new RatingMapRepository(ratings);
+        repositories = new RepositoryCollection(itemRepository, userRepository, ratingMapRepository);
         
-        catalog = new Catalog();
-        recommender = new Recommender();
-        logger = new Logger();
+        catalog = new Catalog(repositories);
+        recommender = new Recommender(repositories);
+        logger = new Logger(repositories.UserRepository);
 
         Console.WriteLine("Setup complete!");
         Console.WriteLine($"- Items added: {items.GetCount()}");
@@ -45,7 +48,7 @@ public class Program {
             string itemType = Console.ReadLine();
 
             try {
-                items = ItemDatabaseFactory.NewDatabaseFromFile(itemFile, itemType);
+                items = ItemDatabaseFactory.NewDatabaseFromFile(itemFile, itemType, repositories.ItemRepository.GetNextAvailableItemId());
                 return;
             } catch (ArgumentException) {
                 Console.WriteLine("Invalid inputs. Please try again.");
@@ -63,7 +66,7 @@ public class Program {
             IFileReader fileReader = new StandardFileReader();
             var userTextParsed = fileReader.GetUserFileParsedText(userFile);
             try {
-                users = UserDatabaseFactory.NewDatabaseFromFile(userFile, userType);
+                users = UserDatabaseFactory.NewDatabaseFromFile(userFile, userType, repositories.UserRepository.GetNextAvailableUserId());
                 ratings = new RatingMap(users.MapNamesToIds(userTextParsed), items);
                 return;
             } catch (ArgumentException) {

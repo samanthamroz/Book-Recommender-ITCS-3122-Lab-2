@@ -3,7 +3,9 @@ namespace Lab2;
 public class Logger : ILogger {
     public int LoggedInId { get; private set; }
     public User? LoggedInUser { get; private set; }
-    public Logger() {
+    private IUserRepository _userRepository;
+    public Logger(IUserRepository userRepository) {
+        _userRepository = userRepository;
         LoggedInId = -1;
         LoggedInUser = null;
     }
@@ -18,7 +20,7 @@ public class Logger : ILogger {
         }
         
         try {
-            LoggedInUser = Repository.Instance.GetUser(id);
+            LoggedInUser = _userRepository.GetUser(id);
             LoggedInId = id;
         } catch (KeyNotFoundException) {
             Console.WriteLine($"No user with ID {id} found");
@@ -28,6 +30,7 @@ public class Logger : ILogger {
     public void LogOut() {
         Console.WriteLine($"You have been successfully logged out.");
         LoggedInId = -1;
+        LoggedInUser = null;
     }
 
     public bool IsLoggedIn() {
