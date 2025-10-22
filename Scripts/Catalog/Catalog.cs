@@ -26,6 +26,7 @@ public class Catalog : ICatalog {
         } catch (ArgumentException) {
             Console.WriteLine("Invalid inputs for creating a new user.");
         }
+        Console.WriteLine("----------");
     }
 
     public void AddItem() {
@@ -37,11 +38,12 @@ public class Catalog : ICatalog {
         try {
             Item newItem = ItemFactory.CreateItemFromConsoleInput(type, id);
             _itemRepository.AddItem(newItem);
-        
+            _ratingMapRepository.ResetAllRatingsOfItem(newItem.ItemId);
             Console.WriteLine($"New {type} successfully added with ID {id}. Current {type} count: {_itemRepository.GetItemCount()}");
         } catch (ArgumentException) {
             Console.WriteLine("Invalid inputs for creating a new item.");
         }
+        Console.WriteLine("----------");
     }
 
     public void AddItemRating(User loggedInUser) {
@@ -78,6 +80,7 @@ public class Catalog : ICatalog {
         }
 
         Console.WriteLine($"You rated {itemFound} a {rating}!");
+        Console.WriteLine("----------");
     }
 
     public void DisplayUsersRatings(User loggedInUser) {

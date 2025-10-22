@@ -7,6 +7,9 @@ public class RatingMapRepository : IRatingMapRepository {
     public RatingMapRepository(IRatingMap ratings) {
         _ratingMap = ratings;
     }
+    public void ResetAllRatingsOfItem(int itemId) {
+        _ratingMap.ResetAllRatingsOfItem(itemId);
+    }
     public int GetUsersRatingOfItem(int userId, int itemId) {
         return _ratingMap.GetItemRating(userId, itemId);
     }

@@ -16,6 +16,7 @@ public class Logger : ILogger {
 
         if (!int.TryParse(input, out int id)) {
             Console.WriteLine($"Input {input} not valid as an ID.");
+            Console.WriteLine("----------");
             return;
         }
         
@@ -25,10 +26,12 @@ public class Logger : ILogger {
         } catch (KeyNotFoundException) {
             Console.WriteLine($"No user with ID {id} found");
         }
+        Console.WriteLine("----------");
     }
 
     public void LogOut() {
         Console.WriteLine($"You have been successfully logged out.");
+        Console.WriteLine("----------");
         LoggedInId = -1;
         LoggedInUser = null;
     }

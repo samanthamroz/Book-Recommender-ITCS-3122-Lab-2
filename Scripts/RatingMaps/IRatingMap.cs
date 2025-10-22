@@ -1,7 +1,8 @@
 namespace Lab2;
 
 public interface IRatingMap {
-    public void SetItemRating(int memberId, int itemId, int rating);
-    public int GetItemRating(int memberId, int itemId);
-    public IReadOnlyDictionary<int, int> GetUsersRatings(int memberId);
+    void ResetAllRatingsOfItem(int itemId);
+    void SetItemRating(int memberId, int itemId, int rating);
+    int GetItemRating(int memberId, int itemId);
+    IReadOnlyDictionary<int, int> GetUsersRatings(int memberId);
 }

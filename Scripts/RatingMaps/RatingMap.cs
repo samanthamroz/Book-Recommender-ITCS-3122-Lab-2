@@ -29,7 +29,11 @@ public class RatingMap : IRatingMap {
             }
         }
     }
-
+    public void ResetAllRatingsOfItem(int itemId) {
+        foreach (var member in Ratings) {
+            SetItemRating(member.Key, itemId, 0);
+        }
+    }
     public void SetItemRating(int memberId, int itemId, int rating) {
         bool isValid = rating == -5 || rating == -3 || rating == 0 || rating == 1 || rating == 3 || rating == 5;
         if (!isValid) {
@@ -46,7 +50,6 @@ public class RatingMap : IRatingMap {
             }
         }
     }
-
     public int GetItemRating(int memberId, int itemId) {
         if (Ratings.TryGetValue(memberId, out var memberRatings)) {
             if (memberRatings.TryGetValue(itemId, out var rating)) {
@@ -60,7 +63,6 @@ public class RatingMap : IRatingMap {
         SetItemRating(memberId, itemId, 0);
         return 0;
     }
-
     public IReadOnlyDictionary<int, int> GetUsersRatings(int memberId) {
         return Ratings[memberId];
     }

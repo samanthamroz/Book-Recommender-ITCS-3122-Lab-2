@@ -30,6 +30,7 @@ public class Program {
         Console.WriteLine("Setup complete!");
         Console.WriteLine($"- Items added: {items.GetCount()}");
         Console.WriteLine($"- Users added: {users.GetCount()}");
+        Console.WriteLine("----------");
 
         while (true) { //Environment.Exit contained in the guest menu dialogue
             if (!logger.IsLoggedIn()) {
